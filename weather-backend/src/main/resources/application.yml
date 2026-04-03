@@ -1,0 +1,5 @@
+server:
+  port: 8080
+
+open-meteo:
+  base-url: https://api.open-meteo.com
