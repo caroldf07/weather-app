@@ -29,7 +29,7 @@ dependencies {
     }
     testImplementation("io.mockk:mockk:1.13.8")
     testImplementation("com.ninja-squad:springmockk:3.1.2")
-    testImplementation("com.github.tomakehurst:wiremock-jre8:2.35.1")
+    testImplementation("com.github.tomakehurst:wiremock-jre8:3.0.1")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
 }
 
