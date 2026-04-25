@@ -4,7 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "overrides": {
-    "path-to-regexp": ">=6.3.1"
+    "path-to-regexp": ">=6.3.1",
+    "minimatch": ">=9.0.7"
   },
   "scripts": {
     "dev": "vite",
