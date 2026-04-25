@@ -1,0 +1,53 @@
+version: 2.1
+
+jobs:
+  backend-build-test:
+    docker:
+      - image: cimg/openjdk:11.0
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-backend-{{ checksum "weather-backend/build.gradle.kts" }}
+      - run:
+          name: Grant execute permission
+          command: chmod +x weather-backend/gradlew
+      - run:
+          name: Build and test backend
+          command: cd weather-backend && ./gradlew test --no-daemon
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: v1-backend-{{ checksum "weather-backend/build.gradle.kts" }}
+      - store_test_results:
+          path: weather-backend/build/test-results
+      - store_artifacts:
+          path: weather-backend/build/reports/tests
+
+  frontend-build-test:
+    docker:
+      - image: cimg/node:18.17
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-frontend-{{ checksum "weather-frontend/package-lock.json" }}
+      - run:
+          name: Install dependencies
+          command: cd weather-frontend && npm ci
+      - save_cache:
+          paths:
+            - weather-frontend/node_modules
+          key: v1-frontend-{{ checksum "weather-frontend/package-lock.json" }}
+      - run:
+          name: Run unit tests
+          command: cd weather-frontend && npm test
+      - run:
+          name: Build
+          command: cd weather-frontend && npm run build
+
+workflows:
+  build-test:
+    jobs:
+      - backend-build-test
+      - frontend-build-test
