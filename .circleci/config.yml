@@ -1,0 +1,79 @@
+version: 2.1
+
+jobs:
+  security-audit:
+    docker:
+      - image: cimg/node:20.18
+    steps:
+      - checkout
+      - run:
+          name: Frontend security audit
+          command: cd weather-frontend && npm ci && npm audit --audit-level=high
+
+  backend-build-test:
+    docker:
+      - image: cimg/openjdk:17.0
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-gradle-{{ checksum "weather-backend/build.gradle.kts" }}
+      - run:
+          name: Build and test backend
+          command: cd weather-backend && ./gradlew test --no-daemon
+      - save_cache:
+          paths:
+            - ~/.gradle/caches
+          key: v1-gradle-{{ checksum "weather-backend/build.gradle.kts" }}
+      - store_test_results:
+          path: weather-backend/build/test-results
+
+  frontend-build-test:
+    docker:
+      - image: cimg/node:20.18
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-frontend-{{ checksum "weather-frontend/package-lock.json" }}
+      - run:
+          name: Install dependencies
+          command: cd weather-frontend && npm ci
+      - save_cache:
+          paths:
+            - weather-frontend/node_modules
+          key: v1-frontend-{{ checksum "weather-frontend/package-lock.json" }}
+      - run:
+          name: Run tests
+          command: cd weather-frontend && npm test
+      - run:
+          name: Build
+          command: cd weather-frontend && npm run build
+
+  deploy-vercel:
+    docker:
+      - image: cimg/node:20.18
+    steps:
+      - checkout
+      - run:
+          name: Deploy frontend to Vercel
+          command: |
+            cd weather-frontend
+            npm install -g vercel@latest
+            vercel pull --yes --environment=production --token=$VERCEL_TOKEN
+            vercel build --prod --token=$VERCEL_TOKEN
+            vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN
+
+workflows:
+  ci-cd:
+    jobs:
+      - security-audit
+      - backend-build-test
+      - frontend-build-test
+      - deploy-vercel:
+          requires:
+            - security-audit
+            - frontend-build-test
+          filters:
+            branches:
+              only: main
