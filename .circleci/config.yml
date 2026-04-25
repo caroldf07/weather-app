@@ -19,6 +19,9 @@ jobs:
           keys:
             - v1-gradle-{{ checksum "weather-backend/build.gradle.kts" }}
       - run:
+          name: Grant execute permission
+          command: chmod +x weather-backend/gradlew
+      - run:
           name: Build and test backend
           command: cd weather-backend && ./gradlew test --no-daemon
       - save_cache:
