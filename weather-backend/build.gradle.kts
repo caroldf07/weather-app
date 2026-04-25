@@ -33,7 +33,7 @@ dependencies {
         exclude(group = "org.mockito", module = "mockito-junit-jupiter")
     }
     testImplementation("io.mockk:mockk:1.13.17")
-    testImplementation("com.ninja-squad:springmockk:4.0.2")
+    testImplementation("com.ninja-squad:springmockk:5.0.1")
     testImplementation("org.wiremock:wiremock-standalone:3.10.0")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
 }
