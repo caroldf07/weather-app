@@ -34,7 +34,7 @@ dependencies {
     }
     testImplementation("io.mockk:mockk:1.13.17")
     testImplementation("com.ninja-squad:springmockk:4.0.2")
-    testImplementation("org.wiremock:wiremock-standalone:3.10.0")
+    testImplementation("org.wiremock:wiremock-standalone:3.13.2")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
 }
 
